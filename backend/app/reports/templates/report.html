@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 2cm 1.8cm;
+    @bottom-center { content: "Screening " attr(data-id) " — page " counter(page) " of " counter(pages);
+                     font-size: 8pt; color: #666; } }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #1a1a1a; }
+  h1 { font-size: 17pt; margin: 0 0 2pt; }
+  h2 { font-size: 12pt; border-bottom: 1px solid #999; padding-bottom: 3pt; margin: 18pt 0 8pt; }
+  .subtitle { color: #555; margin-bottom: 14pt; }
+  .status { display: inline-block; padding: 3pt 10pt; border-radius: 3pt; font-weight: bold;
+            font-size: 11pt; margin: 6pt 0; }
+  .status-no_findings { background: #e6f4ea; color: #1e7e34; }
+  .status-review_required { background: #fff3cd; color: #856404; }
+  .status-findings { background: #f8d7da; color: #721c24; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0; }
+  th, td { text-align: left; padding: 4pt 6pt; border-bottom: 1px solid #ddd; vertical-align: top; }
+  th { background: #f2f2f2; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.4pt; }
+  .sev { font-weight: bold; text-transform: uppercase; font-size: 9pt; }
+  .sev-alert { color: #c0392b; }
+  .sev-warning { color: #b8860b; }
+  .sev-info { color: #2c6e91; }
+  .meta { font-size: 9pt; color: #444; }
+  .evidence { font-family: "Courier New", monospace; font-size: 8pt; color: #333;
+              background: #f7f7f7; padding: 4pt; white-space: pre-wrap; word-break: break-all; }
+  .disclaimer { font-size: 8pt; color: #555; border: 1px solid #ccc; padding: 8pt;
+                margin-top: 20pt; }
+  .hash { font-family: "Courier New", monospace; font-size: 8pt; word-break: break-all; }
+</style>
+</head>
+<body>
+  <h1>Vessel Sanctions Screening Report</h1>
+  <div class="subtitle">IMO {{ report.imo }} — {{ report.vessel_profile.name or "name unknown" }}</div>
+
+  <div class="status status-{{ report.overall_status }}">
+    {{ report.overall_status.replace("_", " ") | upper }}
+  </div>
+
+  <table class="meta">
+    <tr><th>Screening ID</th><td>{{ report.screening_id }}</td>
+        <th>Screened at (UTC)</th><td>{{ report.screened_at }}</td></tr>
+    <tr><th>Trigger</th><td>{{ report.trigger }}</td>
+        <th>Requested by</th><td>{{ report.requested_by or "—" }}</td></tr>
+  </table>
+
+  <h2>Vessel profile</h2>
+  <table>
+    <tr><th>IMO</th><td>{{ report.imo }}</td><th>Name</th><td>{{ report.vessel_profile.name or "—" }}</td></tr>
+    <tr><th>Flag</th><td>{{ report.vessel_profile.flag or "—" }}</td>
+        <th>Call sign</th><td>{{ report.vessel_profile.callsign or "—" }}</td></tr>
+    <tr><th>Known MMSIs</th><td>{{ report.vessel_profile.mmsis | join(", ") or "—" }}</td>
+        <th>Flag history</th><td>{{ report.vessel_profile.flags | join(" → ") or "—" }}</td></tr>
+    <tr><th>Recorded owners</th><td colspan="3">
+      {% for o in report.vessel_profile.owners %}{{ o.name }} ({{ o.role }}{% if o.country %}, {{ o.country }}{% endif %}){% if not loop.last %}; {% endif %}{% else %}—{% endfor %}
+    </td></tr>
+  </table>
+
+  <h2>Findings ({{ report.findings | length }})</h2>
+  {% if report.findings %}
+  <table>
+    <tr><th style="width:14%">Severity</th><th style="width:16%">Rule</th><th>Detail</th></tr>
+    {% for f in report.findings %}
+    <tr>
+      <td class="sev sev-{{ f.severity }}">{{ f.severity }}</td>
+      <td>{{ f.rule_id }}</td>
+      <td>{{ f.summary }}
+        <div class="evidence">{{ f.evidence | tojson(indent=0) }}</div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>No red-flag behaviors detected against the evaluated rule set and the data available at screening time.</p>
+  {% endif %}
+
+  <h2>Rules evaluated</h2>
+  <table>
+    <tr><th>Rule</th><th>Regime</th><th>Version</th><th>Parameters</th></tr>
+    {% for r in report.rules_evaluated %}
+    <tr><td>{{ r.rule_id }}</td><td>{{ r.regime }}</td><td>{{ r.version }}</td>
+        <td class="evidence">{{ r.params | tojson }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Data sources (as of)</h2>
+  <table>
+    <tr><th>Source</th><th>Status / version</th><th>Last updated</th></tr>
+    {% for name, src in report.data_sources.items() %}
+    <tr><td>{{ name }}</td><td>{{ src.status or "—" }}{% if src.version %} ({{ src.version }}){% endif %}</td>
+        <td>{{ src.as_of or "—" }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <div class="disclaimer"><strong>Disclaimer.</strong> {{ report.disclaimer }}</div>
+
+  <p class="hash">Report integrity (SHA-256 of canonical JSON): {{ sha256 }}</p>
+</body>
+</html>

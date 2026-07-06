@@ -1,14 +1,9 @@
-"""bluewake API entrypoint.
-
-Route modules are registered here as they land:
-  Phase 2: /vessels/{imo}, /screenings
-  Phase 4: /watchlist
-"""
+"""bluewake API entrypoint."""
 
 from fastapi import FastAPI
-
 from sqlalchemy import text
 
+from app.api.routes import screenings, vessels
 from app.db import engine
 
 app = FastAPI(
@@ -20,6 +15,9 @@ app = FastAPI(
     ),
     version="0.1.0",
 )
+
+app.include_router(vessels.router)
+app.include_router(screenings.router)
 
 
 @app.get("/health")
