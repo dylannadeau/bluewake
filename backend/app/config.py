@@ -26,5 +26,7 @@ class Settings(BaseSettings):
 
     report_storage_dir: str = "/data/reports"
 
+    cors_origins: list[str] = ["http://localhost:3000"]
+
 
 settings = Settings()
