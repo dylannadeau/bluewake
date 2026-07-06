@@ -15,6 +15,7 @@ dependencies = [
     "weasyprint>=62",           # PDF report rendering
     "jinja2>=3.1",              # report templates
     "apscheduler>=3.10",        # phase 4: scheduled re-screening
+    "email-validator>=2.0",     # pydantic EmailStr
 ]
 
 [project.optional-dependencies]

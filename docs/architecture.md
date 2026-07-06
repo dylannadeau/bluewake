@@ -58,12 +58,17 @@ Spark, no data lake — analytics are plain SQL over Postgres.
 | `flag_hopping` | >N flag changes in window | flag history |
 | `identity_conflict` | concurrent conflicting identities on one IMO | identity observations |
 
-## Build phases
+## Build phases (all complete)
 
-1. Ingestion (AIS + SDN + GFW) → IMO resolution → schema *(schema done)*
+1. Ingestion (AIS + SDN + GFW) → IMO resolution → schema
 2. Rule engine + screening report generator (PDF via WeasyPrint + JSON)
 3. Next.js UI: IMO lookup, screening history, report download
 4. Watchlist, scheduled re-screening (APScheduler), email alerts
+
+AIS storage policy: positions persist only for tracked vessels (screened,
+watchlisted, or SDN-seeded); untracked traffic sits in a short in-memory
+buffer that is flushed to the DB the moment a vessel becomes tracked.
+AISHub remains a stub seam pending a membership account.
 
 ## Explicit non-goals
 

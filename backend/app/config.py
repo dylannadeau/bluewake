@@ -28,5 +28,9 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:3000"]
 
+    # Phase 4: watchlist re-screening
+    enable_scheduler: bool = True
+    watchlist_check_interval_minutes: int = 15
+
 
 settings = Settings()
