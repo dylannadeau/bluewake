@@ -4,10 +4,10 @@ Each module here owns one upstream source and follows the same contract:
 fetch → log a source_ingest_runs row → write append-only observation rows →
 hand identity attributes to app.resolution for IMO linking.
 
-Modules (stubs until the plan is confirmed):
-  aisstream  — live AIS via aisstream.io websocket
-  aishub     — AIS via AISHub polling API
-  ofac_sdn   — OFAC SDN + alt-names lists (CSV)
+Modules:
+  aisstream  — live AIS via aisstream.io websocket (tracked-vessel persistence)
+  aishub     — AIS via AISHub polling API (stub seam; requires membership)
+  ofac_sdn   — OFAC SDN + alt-names lists (CSV), versioned + match recompute
   gfw        — Global Fishing Watch events (gaps, loitering, encounters) + vessel insights
 
 Paid-source seam: a future Spire/Orbcomm module implements this same contract

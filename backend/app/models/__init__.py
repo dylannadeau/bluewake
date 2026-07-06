@@ -1,1 +1,41 @@
-"""SQLAlchemy models mirroring db/migrations/001_init.sql (populated in Phase 1)."""
+"""SQLAlchemy models mirroring db/migrations/001_init.sql."""
+
+from app.models.tables import (
+    AisGap,
+    AisPosition,
+    Base,
+    GfwEvent,
+    RiskRule,
+    Screening,
+    ScreeningFinding,
+    SdnAltName,
+    SdnEntity,
+    SdnMatch,
+    SourceIngestRun,
+    Vessel,
+    VesselFlagHistory,
+    VesselIdentity,
+    VesselOwnership,
+    WatchlistAlert,
+    WatchlistEntry,
+)
+
+__all__ = [
+    "AisGap",
+    "AisPosition",
+    "Base",
+    "GfwEvent",
+    "RiskRule",
+    "Screening",
+    "ScreeningFinding",
+    "SdnAltName",
+    "SdnEntity",
+    "SdnMatch",
+    "SourceIngestRun",
+    "Vessel",
+    "VesselFlagHistory",
+    "VesselIdentity",
+    "VesselOwnership",
+    "WatchlistAlert",
+    "WatchlistEntry",
+]
